@@ -32,26 +32,4 @@ class Pick(commands.Cog):
         
         I suggest using [nestedcommands by tmerc](https://github.com/tmercswims/tmerc-cogs) (Example of usage `[p]say Congratulations <@$(pick)>! You won!`)"""
         winner = random.choice(ctx.guild.members)
-        await ctx.send(f"{winner.id}")
-
-    @commands.command()
-    @commands.guild_only()
-    @checks.admin_or_permissions(manage_guild=True)
-    async def picksetrole(self, ctx, role: discord.Role):
-        """Set a role winners should have."""
-        await self.config.guild(ctx.guild).role.set(role.id)
-        await ctx.send(f"Role has been set to {role.name}.")
-
-    @commands.command()
-    @commands.guild_only()
-    @checks.mod_or_permissions(manage_roles=True)
-    async def pickrole(self, ctx: commands.Context):
-        """Pick a random user with specified role. **Output is a user ID.**
-        
-        I suggest using [nestedcommands by tmerc](https://github.com/tmercswims/tmerc-cogs) (Example of usage `[p]say Congratulations <@$(rpick)>! You won!`)"""
-        role = get(ctx.guild.roles, id=await self.config.guild(ctx.guild).role())
-        if len(role.members) == 0:
-            await ctx.send("No members to choose from.")
-        else:
-            winner = random.choice(role.members)
-            await ctx.send(f"{winner.id}")
+        await ctx.send(f"<@{winner.id}>")
