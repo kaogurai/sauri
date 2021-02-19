@@ -78,7 +78,7 @@ class Cookies(commands.Cog):
 
     @commands.command()
     @commands.guild_only()
-    async def steal(self, ctx: commands.Context, target: discord.Member = None):
+    async def stealcookies(self, ctx: commands.Context, target: discord.Member = None):
         """Steal cookies from members."""
         cur_time = calendar.timegm(ctx.message.created_at.utctimetuple())
         next_steal = await self.config.member(ctx.author).next_steal()
