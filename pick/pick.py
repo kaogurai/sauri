@@ -27,18 +27,17 @@ class Pick(commands.Cog):
     @commands.command()
     @commands.guild_only()
     @checks.mod_or_permissions(manage_roles=True)
-    async def pick(self, ctx: commands.Context):
+    async def pickuser(self, ctx: commands.Context):
         """Pick a random user. **Output is a user ID.**
         
         I suggest using [nestedcommands by tmerc](https://github.com/tmercswims/tmerc-cogs) (Example of usage `[p]say Congratulations <@$(pick)>! You won!`)"""
         winner = random.choice(ctx.guild.members)
         await ctx.send(f"{winner.id}")
 
-    # ROLES SETUP:
     @commands.command()
     @commands.guild_only()
     @checks.admin_or_permissions(manage_guild=True)
-    async def pickrole(self, ctx, role: discord.Role):
+    async def picksetrole(self, ctx, role: discord.Role):
         """Set a role winners should have."""
         await self.config.guild(ctx.guild).role.set(role.id)
         await ctx.send(f"Role has been set to {role.name}.")
@@ -46,7 +45,7 @@ class Pick(commands.Cog):
     @commands.command()
     @commands.guild_only()
     @checks.mod_or_permissions(manage_roles=True)
-    async def rpick(self, ctx: commands.Context):
+    async def pickrole(self, ctx: commands.Context):
         """Pick a random user with specified role. **Output is a user ID.**
         
         I suggest using [nestedcommands by tmerc](https://github.com/tmercswims/tmerc-cogs) (Example of usage `[p]say Congratulations <@$(rpick)>! You won!`)"""
