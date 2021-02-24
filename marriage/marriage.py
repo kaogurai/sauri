@@ -47,8 +47,8 @@ class Marriage(commands.Cog):
             },
         )
         self.config.register_guild(
-            toggle=False,
-            marprice=1500,
+            toggle=True,
+            marprice=100,
             divprice=2,
             currency=0,
             multi=False,
