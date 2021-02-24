@@ -174,6 +174,7 @@ class Counting(commands.Cog):
              await ctx.send("Updating the channel's topic is now enabled.")
          else:
              await ctx.send("Updating the channel's topic is now disabled.")
+                
 #    @setcount.command(name="allowtext")
 #    async def setcount_allowtext(self, ctx: commands.Context, on_off: bool = None):
 #        """Toggle allowing text AFTER the number.
