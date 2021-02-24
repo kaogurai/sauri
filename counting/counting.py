@@ -159,8 +159,8 @@ class Counting(commands.Cog):
         else:
             await ctx.send("Warning messages are now disabled.")
 
-     @setcount.command(name="topic")
-     async def setcount_topic(self, ctx: commands.Context, on_off: bool = None):
+    @setcount.command(name="topic")
+    async def setcount_topic(self, ctx: commands.Context, on_off: bool = None):
          """Toggle counting channel's topic changing.
 
          If `on_off` is not provided, the state will be flipped.="""
