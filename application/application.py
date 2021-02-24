@@ -18,7 +18,7 @@ class Application(commands.Cog):
     """
 
     __author__ = "saurichable"
-    __version__ = "1.2.0"
+    __version__ = "1.2.6"
 
     def __init__(self, bot: Red):
         self.bot = bot
@@ -52,7 +52,7 @@ class Application(commands.Cog):
         if not await self.config.guild(ctx.guild).is_set():
             return await ctx.send("Uh oh, the configuration is not correct. Ask the Admins to set it.")
 
-        if self.config.guild(ctx.guild).applicant_role:
+        if await self.config.guild(ctx.guild).applicant_role():
             try:
                 role_add = get(ctx.guild.roles, id = await self.config.guild(ctx.guild).applicant_id())
             except TypeError:
@@ -106,13 +106,21 @@ class Application(commands.Cog):
             return m.author == ctx.author and m.channel == ctx.author.dm_channel
 
         questions = await self.config.guild(ctx.guild).questions() # list of lists
-        for question in questions: # for list in lists
-            await ctx.author.send(question[0])
+        default_questions = await self._default_questions_list() # default list of lists just in case
+        for i, question in enumerate(questions): # for list in lists
             try:
-                answer = await self.bot.wait_for("message", timeout=question[2], check=check)
+                await ctx.author.send(question[0])
+                timeout = question[2]
+                shortcut = question[1]
+            except TypeError:
+                await ctx.author.send(default_questions[i][0])
+                timeout = default_questions[i][2]
+                shortcut = default_questions[i][1]
+            try:
+                answer = await self.bot.wait_for("message", timeout=timeout, check=check)
             except asyncio.TimeoutError:
-                return await ctx.send("You took too long. Try again, please.")
-            embed.add_field(name=question[1] + ":", value=answer.content)
+                return await ctx.author.send("You took too long. Try again, please.")
+            embed.add_field(name=shortcut + ":", value=answer.content)
 
         await channel.send(embed=embed)
 
@@ -218,9 +226,13 @@ class Application(commands.Cog):
     @setapply.command(name="questions")
     async def setapply_questions(self, ctx: commands.Context):
         """Set custom application questions."""
-        current_questions = "Default questions:"
+        current_questions = "**Current questions:**"
         for question in await self.config.guild(ctx.guild).questions():
-            current_questions += "\n" + question[0]
+            try:
+                current_questions += "\n" + question[0]
+            except TypeError:
+                current_questions = "Uh oh, couldn't fetch your questions.\n" + await self._default_questions_string()
+                break
         await ctx.send(current_questions)
 
         same_context = MessagePredicate.same_context(ctx)
@@ -238,24 +250,24 @@ class Application(commands.Cog):
 
             await ctx.send("Enter question: ")
             try:
-                await self.bot.wait_for("message", timeout=60, check=same_context)
+                custom_question = await self.bot.wait_for("message", timeout=60, check=same_context)
             except asyncio.TimeoutError:
                 return await ctx.send("You took too long. Try again, please.")
-            question_list.append(same_context.result)
+            question_list.append(custom_question.content)
 
             await ctx.send("Enter how the question will look in final embed (f.e. Name): ")
             try:
                 shortcut = await self.bot.wait_for("message", timeout=60, check=same_context)
             except asyncio.TimeoutError:
                 return await ctx.send("You took too long. Try again, please.")
-            question_list.append(same_context.result)
+            question_list.append(shortcut.content)
 
             await ctx.send("Enter how many seconds the applicant has to answer: ")
             try:
                 time = await self.bot.wait_for("message", timeout=60, check=valid_int)
             except asyncio.TimeoutError:
                 return await ctx.send("You took too long. Try again, please.")
-            question_list.append(int(valid_int).result)
+            question_list.append(int(valid_int.result))
 
             list_of_questions.append(question_list)
 
@@ -376,3 +388,21 @@ class Application(commands.Cog):
             )
         await ctx.send(f"Denied {target.mention}'s application.")
 
+    async def _default_questions_list(self):
+        return [
+            ["What position are you applying for?", "Position", 120],
+            ["What is your name?", "Name", 120],
+            ["How old are you?", "Age", 120],
+            ["What timezone are you in? (Google is your friend.)", "Timezone", 120],
+            ["How many days per week can you be active?", "Active days/week", 120],
+            ["How many hours per day can you be active?", "Active hours/day", 120],
+            ["Do you have any previous experience? If so, please describe.", "Previous experience", 120],
+            ["Why do you want to be a member of our staff?", "Reason", 120],
+        ]
+
+    async def _default_questions_string(self):
+        list_of_questions = await self._default_questions_list()
+        string = "**Default questions:**"
+        for question in list_of_questions:
+            string += "\n" + question[0]
+        return string
