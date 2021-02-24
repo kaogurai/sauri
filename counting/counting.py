@@ -131,7 +131,7 @@ class Counting(commands.Cog):
         else:
             await self.config.guild(ctx.guild).whitelist.set(role.id)
             await ctx.send(f"{role.name} has been whitelisted.")
-
+            
     @setcount.command(name="warnmsg")
     async def setcount_warnmsg(
         self, ctx: commands.Context, on_off: bool = None, seconds: int = 0
