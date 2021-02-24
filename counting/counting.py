@@ -159,22 +159,6 @@ class Counting(commands.Cog):
         else:
             await ctx.send("Warning messages are now disabled.")
 
-    @setcount.command(name="topic")
-    async def setcount_topic(self, ctx: commands.Context, on_off: bool = None):
-        """Toggle counting channel's topic changing.
-
-        If `on_off` is not provided, the state will be flipped.="""
-        target_state = (
-            on_off
-            if on_off
-            else not (await self.config.guild(ctx.guild).topic())
-        )
-        await self.config.guild(ctx.guild).topic.set(target_state)
-        if target_state:
-            await ctx.send("Updating the channel's topic is now enabled.")
-        else:
-            await ctx.send("Updating the channel's topic is now disabled.")
-
 #    @setcount.command(name="allowtext")
 #    async def setcount_allowtext(self, ctx: commands.Context, on_off: bool = None):
 #        """Toggle allowing text AFTER the number.
@@ -278,13 +262,13 @@ class Counting(commands.Cog):
         except (TypeError, ValueError):
             return
 
-    async def _set_topic(self, now, goal, n, channel):
+    async def _set_topic(self, now, goal, channel):
         if goal == 0:
-            await channel.edit(topic=f"Let's count! | Next message must be {n}!")
+            await channel.edit(topic=f"Let's count!")
         else:
             if now < goal:
                 await channel.edit(
-                    topic=f"Let's count! | Next message must be {n}! | Goal is {goal}!"
+                    topic=f"Let's count! | Goal is {goal}!"
                 )
             elif now == goal:
                 await channel.send("We did it, we reached the goal! :tada:")
