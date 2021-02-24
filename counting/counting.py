@@ -159,6 +159,21 @@ class Counting(commands.Cog):
         else:
             await ctx.send("Warning messages are now disabled.")
 
+     @setcount.command(name="topic")
+     async def setcount_topic(self, ctx: commands.Context, on_off: bool = None):
+         """Toggle counting channel's topic changing.
+
+         If `on_off` is not provided, the state will be flipped.="""
+         target_state = (
+             on_off
+             if on_off
+             else not (await self.config.guild(ctx.guild).topic())
+         )
+         await self.config.guild(ctx.guild).topic.set(target_state)
+         if target_state:
+             await ctx.send("Updating the channel's topic is now enabled.")
+         else:
+             await ctx.send("Updating the channel's topic is now disabled.")
 #    @setcount.command(name="allowtext")
 #    async def setcount_allowtext(self, ctx: commands.Context, on_off: bool = None):
 #        """Toggle allowing text AFTER the number.
