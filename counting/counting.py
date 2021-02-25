@@ -31,7 +31,6 @@ class Counting(commands.Cog):
             warning=False,
             seconds=0,
             allow_text=False,
-            topic=True,
         )
 
     @checks.admin_or_permissions(administrator=True)
@@ -54,8 +53,6 @@ class Counting(commands.Cog):
             return await ctx.send("Channel removed.")
         await self.config.guild(ctx.guild).channel.set(channel.id)
         goal = await self.config.guild(ctx.guild).goal()
-        if await self.config.guild(ctx.guild).topic():
-            await self._set_topic(0, goal, 1, channel)
         await ctx.send(f"{channel.name} has been set for counting.")
 
     @setcount.command(name="goal")
@@ -86,8 +83,6 @@ class Counting(commands.Cog):
         await self.config.guild(ctx.guild).last.set(0)
         goal = await self.config.guild(ctx.guild).goal()
         next_number = number + 1
-        if await self.config.guild(ctx.guild).topic():
-            await self._set_topic(number, goal, next_number, channel)
         await channel.send(number)
         if c_id != ctx.channel.id:
             await ctx.send(f"Counting start set to {number}.")
@@ -117,8 +112,6 @@ class Counting(commands.Cog):
         await self.config.guild(ctx.guild).last.set(0)
         await c.send("Counting has been reset.")
         goal = await self.config.guild(ctx.guild).goal()
-        if await self.config.guild(ctx.guild).topic():
-            await self._set_topic(0, goal, 1, c)
         if c_id != ctx.channel.id:
             await ctx.send("Counting has been reset.")
 
@@ -158,22 +151,6 @@ class Counting(commands.Cog):
                 )
         else:
             await ctx.send("Warning messages are now disabled.")
-
-    @setcount.command(name="topic")
-    async def setcount_topic(self, ctx: commands.Context, on_off: bool = None):
-         """Toggle counting channel's topic changing.
-
-         If `on_off` is not provided, the state will be flipped.="""
-         target_state = (
-             on_off
-             if on_off
-             else not (await self.config.guild(ctx.guild).topic())
-         )
-         await self.config.guild(ctx.guild).topic.set(target_state)
-         if target_state:
-             await ctx.send("Updating the channel's topic is now enabled.")
-         else:
-             await ctx.send("Updating the channel's topic is now disabled.")
                 
 #    @setcount.command(name="allowtext")
 #    async def setcount_allowtext(self, ctx: commands.Context, on_off: bool = None):
@@ -212,8 +189,6 @@ class Counting(commands.Cog):
                     await self.config.guild(message.guild).previous.set(now)
                     await self.config.guild(message.guild).last.set(message.author.id)
                     n = now + 1
-                    if await self.config.guild(message.guild).topic():
-                        return await self._set_topic(now, goal, n, message.channel)
                     return
             except (TypeError, ValueError):
                 pass
@@ -227,7 +202,7 @@ class Counting(commands.Cog):
 #                                message.author.id
 #                            )
 #                            n = now + 1
-#                            return await self._set_topic(now, goal, n, message.channel)
+#                            return 
 #                        pass
 #                    else:
 #                        pass
@@ -277,17 +252,3 @@ class Counting(commands.Cog):
                     await message.channel.send(deleted)
         except (TypeError, ValueError):
             return
-
-    async def _set_topic(self, now, goal, channel):
-        if goal == 0:
-            await channel.edit(topic=f"Let's count!")
-        else:
-            if now < goal:
-                await channel.edit(
-                    topic=f"Let's count! | Goal is {goal}!"
-                )
-            elif now == goal:
-                await channel.send("We did it, we reached the goal! :tada:")
-                await channel.edit(topic=f"Goal reached! :tada:")
-            else:
-                return
