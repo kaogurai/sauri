@@ -44,7 +44,7 @@ class Marriage(commands.Cog):
             marprice=250,
             divprice=2,
             currency=0,
-            multi=False,
+            multi=True,
             custom_actions={},
             custom_gifts={},
             removed_actions=[],
