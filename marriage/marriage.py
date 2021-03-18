@@ -18,7 +18,7 @@ class Marriage(commands.Cog):
     """
 
     __author__ = "saurichable"
-    __version__ = "1.5.0"
+    __version__ = "1.5.2"
 
     def __init__(self, bot: Red):
         self.bot = bot
@@ -49,7 +49,7 @@ class Marriage(commands.Cog):
             custom_gifts={},
             removed_actions=[],
             removed_gifts=[],
-            gift_text=":gift: {0} has gifted one {1} to {2}",
+            gift_text=":gift: {author} has gifted one {item} to {target}",
         )
 
     @property
@@ -59,26 +59,26 @@ class Marriage(commands.Cog):
                 "temper": 5,
                 "price": 0,
                 "require_consent": False,
-                "description": ":heart_eyes: {0} is flirting with {1}",
+                "description": ":heart_eyes: {author} is flirting with {target}",
             },
             "fuck": {
                 "temper": 15,
                 "price": 0,
                 "require_consent": True,
-                "consent_description": "{0} wants to bang you, {1}, give consent?",
-                "description": ":smirk: {0} banged {1}",
+                "consent_description": "{author} wants to bang you, {target}, give consent?",
+                "description": ":smirk: {author} banged {target}",
             },
             "dinner": {
                 "temper": 15,
                 "price": 0,
                 "require_consent": False,
-                "description": ":ramen: {0} took {1} on a fancy dinner",
+                "description": ":ramen: {author} took {target} on a fancy dinner",
             },
             "date": {
                 "temper": 10,
                 "price": 0,
                 "require_consent": False,
-                "description": ":relaxed: {0} took {1} on a nice date",
+                "description": ":relaxed: {author} took {target} on a nice date",
             },
         }
 
@@ -174,12 +174,13 @@ class Marriage(commands.Cog):
         action: str,
         temper: int,
         price: int,
-        consent_description: typing.Optional[str] = None,
-        consent: typing.Optional[int] = False,
-        *,
+        consent_description: typing.Optional[str],
+        consent: typing.Optional[bool],
         description: str,
     ):
-        """Add custom action."""
+        """Add custom action.
+
+        Available parametres are `{author}` and `{target}`"""
         if action in await self._get_actions(ctx):
             return await ctx.send("Uh oh, that's already a registered action.")
         await self.config.guild(ctx.guild).custom_actions.set_raw(
@@ -228,8 +229,8 @@ class Marriage(commands.Cog):
             f"- description: {data.get('description')}"
         )
 
-    @marriage_actions.command(name="all")
-    async def marriage_actions_all(self, ctx: commands.Context):
+    @marriage_actions.command(name="list")
+    async def marriage_actions_list(self, ctx: commands.Context):
         """Show custom action."""
         actions = await self._get_actions(ctx)
         await ctx.send(humanize_list(actions))
@@ -243,7 +244,9 @@ class Marriage(commands.Cog):
     async def marriage_gifts_add(
         self, ctx: commands.Context, gift: str, temper: int, price: int
     ):
-        """Add custom gift."""
+        """Add custom gift.
+
+        Available parametres are `{author}` and `{target}`"""
         if gift in await self._get_gifts(ctx):
             return await ctx.send("Uh oh, that's already a registered gift.")
         await self.config.guild(ctx.guild).custom_gifts.set_raw(
@@ -282,8 +285,8 @@ class Marriage(commands.Cog):
             f"- price: {data.get('price')}"
         )
 
-    @marriage_gifts.command(name="all")
-    async def marriage_gifts_all(self, ctx: commands.Context):
+    @marriage_gifts.command(name="list")
+    async def marriage_gifts_list(self, ctx: commands.Context):
         """Show custom gift."""
         gifts = await self._get_gifts(ctx)
         await ctx.send(humanize_list(gifts))
@@ -691,7 +694,7 @@ class Marriage(commands.Cog):
             if not exertion:
                 exertion = self._DEFAULT_ACTIONS.get(action)
             endtext = exertion.get("description").format(
-                ctx.author.mention, member.mention
+                author=ctx.author.mention, target=member.mention
             )
 
             author_gift = 0
@@ -707,7 +710,7 @@ class Marriage(commands.Cog):
 
             endtext_format = await gc(ctx.guild).gift_text()
             endtext = endtext_format.format(
-                ctx.author.mention, item, member.mention
+                author=ctx.author.mention, item=item, target=member.mention
             )
 
             author_gift = await mc(ctx.author).gifts.get_raw(item, default=0)
@@ -752,7 +755,7 @@ class Marriage(commands.Cog):
         if exertion.get("require_consent"):
             await ctx.send(
                 exertion.get("consent_description").format(
-                    ctx.author.mention, member.mention
+                    author=ctx.author.mention, target=member.mention
                 )
             )
             pred = MessagePredicate.yes_or_no(ctx, ctx.channel, member)
@@ -777,14 +780,16 @@ class Marriage(commands.Cog):
                         await mc(ctx.author).temper.set(a_temp + temper)
                     else:
                         await mc(ctx.author).temper.set(100)
-                endtext = f":smirk: {ctx.author.mention} banged {member.mention}"
+                endtext = exertion.get("description").format(
+                    author=ctx.author.mention, target=member.mention
+                )
             else:
                 a_temp = await mc(ctx.author).temper()
                 if temper < a_temp:
                     await mc(ctx.author).temper.set(a_temp - temper)
                 else:
                     await mc(ctx.author).temper.set(0)
-                endtext = "They refused to bang you."
+                endtext = "They do not wish to do that."
         else:
             t_temp = await mc(member).temper()
             t_missing = 100 - t_temp
