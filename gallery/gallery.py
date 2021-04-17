@@ -1,20 +1,20 @@
 import asyncio
-import discord
+import datetime
 import re
 import typing
 
+import discord
 from redbot.core import Config, checks, commands
-
 from redbot.core.bot import Red
+from redbot.core.utils.chat_formatting import humanize_list
 
 
 class Gallery(commands.Cog):
     """
-    Gallery channels!
+    Set channels as galleries, deleting all messages that don't contain any attachments.
     """
 
-    __author__ = "saurichable"
-    __version__ = "1.3.0"
+    __version__ = "1.3.1"
 
     def __init__(self, bot: Red):
         self.bot = bot
@@ -24,15 +24,20 @@ class Gallery(commands.Cog):
 
         self.config.register_guild(channels=[], whitelist=None, time=0)
 
+    async def red_delete_data_for_user(self, *, requester, user_id):
+        # nothing to delete
+        return
+
+    def format_help_for_context(self, ctx: commands.Context) -> str:
+        context = super().format_help_for_context(ctx)
+        return f"{context}\n\nVersion: {self.__version__}"
+
     @commands.group(autohelp=True)
     @commands.guild_only()
     @checks.admin()
     @checks.bot_has_permissions(manage_messages=True)
     async def galleryset(self, ctx: commands.Context):
-        f"""Various Gallery settings.
-        
-        Version: {self.__version__}
-        Author: {self.__author__}"""
+        """Various Gallery settings."""
 
     @galleryset.command(name="add")
     async def galleryset_add(self, ctx: commands.Context, channel: discord.TextChannel):
@@ -63,11 +68,13 @@ class Gallery(commands.Cog):
             await ctx.send(f"{channel.mention} isn't in the Gallery channels list.")
 
     @galleryset.command(name="role")
-    async def galleryset_role(self, ctx: commands.Context, role: typing.Optional[discord.Role]):
+    async def galleryset_role(
+        self, ctx: commands.Context, role: typing.Optional[discord.Role]
+    ):
         """Add or remove a whitelisted role."""
         if not role:
             await self.config.guild(ctx.guild).whitelist.clear()
-            await ctx.send(f"Whitelisted role has been deleted.")
+            await ctx.send("Whitelisted role has been deleted.")
         else:
             await self.config.guild(ctx.guild).whitelist.set(role.id)
             await ctx.send(f"{role.name} has been whitelisted.")

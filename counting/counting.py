@@ -12,10 +12,9 @@ from redbot.core.bot import Red
 
 class Counting(commands.Cog):
     """
-    Counting channel!
+    Make a counting channel with goals.
     """
 
-    __author__ = "saurichable"
     __version__ = "1.4.0"
 
     def __init__(self, bot: Red):
@@ -35,15 +34,21 @@ class Counting(commands.Cog):
             allow_text=False,
         )
 
+    async def red_delete_data_for_user(self, *, requester, user_id):
+        for guild in self.bot.guilds:
+            if user_id == await self.config.guild(guild).last():
+                await self.config.guild(guild).last.clear()
+
+    def format_help_for_context(self, ctx: commands.Context) -> str:
+        context = super().format_help_for_context(ctx)
+        return f"{context}\n\nVersion: {self.__version__}"
+
     @checks.admin()
     @checks.bot_has_permissions(manage_channels=True, manage_messages=True)
     @commands.group(autohelp=True, aliases=["counting"])
     @commands.guild_only()
     async def countset(self, ctx: commands.Context):
-        f"""Various Counting settings.
-        
-        Version: {self.__version__}
-        Author: {self.__author__}"""
+        """Various Counting settings."""
 
     @countset.command(name="channel")
     async def countset_channel(
@@ -110,7 +115,9 @@ class Counting(commands.Cog):
             await ctx.send("Counting has been reset.")
 
     @countset.command(name="role")
-    async def countset_role(self, ctx: commands.Context, role: typing.Optional[discord.Role]):
+    async def countset_role(
+        self, ctx: commands.Context, role: typing.Optional[discord.Role]
+    ):
         """Add a whitelisted role."""
         if not role:
             await self.config.guild(ctx.guild).whitelist.clear()
@@ -121,7 +128,10 @@ class Counting(commands.Cog):
 
     @countset.command(name="warnmsg")
     async def countset_warnmsg(
-        self, ctx: commands.Context, on_off: typing.Optional[bool], seconds: typing.Optional[int]
+        self,
+        ctx: commands.Context,
+        on_off: typing.Optional[bool],
+        seconds: typing.Optional[int],
     ):
         """Toggle a warning message.
 
@@ -142,7 +152,9 @@ class Counting(commands.Cog):
             await ctx.send("Warning messages are now disabled.")
 
     @countset.command(name="topic")
-    async def countset_topic(self, ctx: commands.Context, on_off: typing.Optional[bool]):
+    async def countset_topic(
+        self, ctx: commands.Context, on_off: typing.Optional[bool]
+    ):
         """Toggle counting channel's topic changing.
 
         If `on_off` is not provided, the state will be flipped.="""
@@ -185,11 +197,9 @@ class Counting(commands.Cog):
 
     @commands.Cog.listener()
     async def on_message(self, message):
-        if not message.guild:
+        if not message.guild or message.author.id == self.bot.user.id:
             return
         if message.channel.id != await self.config.guild(message.guild).channel():
-            return
-        if message.author.id == self.bot.user.id:
             return
         last_id = await self.config.guild(message.guild).last()
         previous = await self.config.guild(message.guild).previous()

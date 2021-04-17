@@ -9,11 +9,18 @@ class Pick(commands.Cog):
     """Picks a random user.
     **Output is a ping/mention.**."""
 
-    __author__ = "saurichable"
     __version__ = "1.2.0"
 
     def __init__(self, bot):
         self.bot = bot
+
+    async def red_delete_data_for_user(self, *, requester, user_id):
+        # nothing to delete
+        return
+
+    def format_help_for_context(self, ctx: commands.Context) -> str:
+        context = super().format_help_for_context(ctx)
+        return f"{context}\n\nVersion: {self.__version__}"
 
     @commands.command()
     @commands.guild_only()
