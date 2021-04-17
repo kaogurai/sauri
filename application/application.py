@@ -12,11 +12,10 @@ from redbot.core.bot import Red
 
 class Application(commands.Cog):
     """
-    Simple application cog.
+    Receive and moderate staff applications with customizable questions.
     """
 
-    __author__ = "saurichable"
-    __version__ = "1.3.1"
+    __version__ = "1.3.2"
 
     def __init__(self, bot: Red):
         self.bot = bot
@@ -43,6 +42,14 @@ class Application(commands.Cog):
             ],
         )
 
+    async def red_delete_data_for_user(self, *, requester, user_id):
+        # nothing to delete
+        return
+
+    def format_help_for_context(self, ctx: commands.Context) -> str:
+        context = super().format_help_for_context(ctx)
+        return f"{context}\n\nVersion: {self.__version__}"
+
     @commands.max_concurrency(1, commands.BucketType.member, wait=True)
     @commands.command()
     @commands.guild_only()
@@ -54,11 +61,16 @@ class Application(commands.Cog):
                 "Uh oh, the configuration is not correct. Ask the Admins to set it."
             )
 
+        role_add = None
+        channel = None
+
         if await self.config.guild(ctx.guild).applicant_id():
             try:
-                role_add = ctx.guild.get_role(await self.config.guild(ctx.guild).applicant_id())
+                role_add = ctx.guild.get_role(
+                    await self.config.guild(ctx.guild).applicant_id()
+                )
             except TypeError:
-                role_add = None
+                pass
             if not role_add:
                 role_add = get(ctx.guild.roles, name="Staff Applicant")
                 if not role_add:
@@ -66,23 +78,18 @@ class Application(commands.Cog):
                         "Uh oh, the configuration is not correct. Ask the Admins to set it."
                     )
         try:
-            channel = ctx.guild.get_channel(await self.config.guild(ctx.guild).channel_id())
+            channel = ctx.guild.get_channel(
+                await self.config.guild(ctx.guild).channel_id()
+            )
         except TypeError:
-            channel = None
+            pass
         if not channel:
             channel = get(ctx.guild.text_channels, name="applications")
             if not channel:
                 return await ctx.send(
                     "Uh oh, the configuration is not correct. Ask the Admins to set it."
                 )
-        if not role_add:
-            return await ctx.send(
-                "Uh oh. Looks like your Admins haven't added the required role."
-            )
-        if not channel:
-            return await ctx.send(
-                "Uh oh. Looks like your Admins haven't added the required channel."
-            )
+
         try:
             await ctx.author.send("Let's start right away!")
         except discord.Forbidden:
@@ -128,7 +135,8 @@ class Application(commands.Cog):
 
         await channel.send(embed=embed)
 
-        await ctx.author.add_roles(role_add)
+        if role_add:
+            await ctx.author.add_roles(role_add)
         await ctx.author.send(
             "Your application has been sent to the Admins, thank you!"
         )
@@ -138,10 +146,7 @@ class Application(commands.Cog):
     @commands.guild_only()
     @checks.bot_has_permissions(manage_channels=True, manage_roles=True)
     async def applyset(self, ctx: commands.Context):
-        f"""Various Application settings.
-        
-        Version: {self.__version__}
-        Author: {self.__author__}"""
+        """Various Application settings."""
 
     @applyset.command(name="questions")
     async def applyset_questions(self, ctx: commands.Context):
@@ -282,7 +287,9 @@ class Application(commands.Cog):
             )
 
         try:
-            accepter = ctx.guild.get_role(await self.config.guild(ctx.guild).accepter_id())
+            accepter = ctx.guild.get_role(
+                await self.config.guild(ctx.guild).accepter_id()
+            )
         except TypeError:
             accepter = None
         if (
@@ -295,7 +302,9 @@ class Application(commands.Cog):
         role = MessagePredicate.valid_role(ctx)
         if await self.config.guild(ctx.guild).applicant_id():
             try:
-                applicant = ctx.guild.get_role(await self.config.guild(ctx.guild).applicant_id())
+                applicant = ctx.guild.get_role(
+                    await self.config.guild(ctx.guild).applicant_id()
+                )
             except TypeError:
                 applicant = None
             if not applicant:
@@ -338,7 +347,9 @@ class Application(commands.Cog):
             )
 
         try:
-            accepter = ctx.guild.get_role(await self.config.guild(ctx.guild).accepter_id())
+            accepter = ctx.guild.get_role(
+                await self.config.guild(ctx.guild).accepter_id()
+            )
         except TypeError:
             accepter = None
         if not accepter:
@@ -350,7 +361,9 @@ class Application(commands.Cog):
 
         if await self.config.guild(ctx.guild).applicant_id():
             try:
-                applicant = ctx.guild.get_role(await self.config.guild(ctx.guild).applicant_id())
+                applicant = ctx.guild.get_role(
+                    await self.config.guild(ctx.guild).applicant_id()
+                )
             except TypeError:
                 applicant = None
             if not applicant:

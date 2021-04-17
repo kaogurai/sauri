@@ -13,11 +13,10 @@ from redbot.core.bot import Red
 
 class AdvancedLock(commands.Cog):
     """
-    Lock `@everyone` from sending messages.
-    Use `[p]setlock setup` first.
+    Lock `@everyone` from sending messages in channels or the entire guild, and only allow Moderators to talk.
+    This version has some advanced settings.
     """
 
-    __author__ = "saurichable"
     __version__ = "1.1.2"
 
     def __init__(self, bot: Red):
@@ -41,12 +40,19 @@ class AdvancedLock(commands.Cog):
 
         self.config.register_guild(**default_guild)
 
+    async def red_delete_data_for_user(self, *, requester, user_id):
+        # nothing to delete
+        return
+
+    def format_help_for_context(self, ctx: commands.Context) -> str:
+        context = super().format_help_for_context(ctx)
+        return f"{context}\n\nVersion: {self.__version__}"
+
     @commands.group(autohelp=True)
     @commands.guild_only()
     @checks.admin_or_permissions(manage_guild=True)
     async def setlock(self, ctx):
         """Various Lock settings."""
-        pass
 
     @commands.guild_only()
     @setlock.command(name="toggle")
@@ -476,9 +482,7 @@ class AdvancedLock(commands.Cog):
         check_channels = [int(c_id) for c_id in config_channels]
         for ig_id in ignore:
             check_channels.append(ig_id)
-        if any(
-            channel.id not in check_channels for channel in ctx.guild.text_channels
-        ):
+        if any(channel.id not in check_channels for channel in ctx.guild.text_channels):
             missing_list = [
                 channel.mention
                 for channel in ctx.guild.text_channels

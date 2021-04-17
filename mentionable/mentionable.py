@@ -7,14 +7,21 @@ from redbot.core.bot import Red
 
 class Mentionable(commands.Cog):
     """
-    Makes unmentionable roles mentionable.
+    Very simple way to make unmentionable roles mentionable.
     """
 
-    __author__ = "saurichable"
     __version__ = "1.0.0"
 
     def __init__(self, bot: Red):
         self.bot = bot
+
+    async def red_delete_data_for_user(self, *, requester, user_id):
+        # nothing to delete
+        return
+
+    def format_help_for_context(self, ctx: commands.Context) -> str:
+        context = super().format_help_for_context(ctx)
+        return f"{context}\n\nVersion: {self.__version__}"
 
     @checks.admin()
     @commands.command()

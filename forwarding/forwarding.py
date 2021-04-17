@@ -8,10 +8,10 @@ from redbot.core import Config, commands, checks
 
 
 class Forwarding(commands.Cog):
-    """Forward messages to the bot owner, incl. pictures (max one per message).
-    You can also DM someone as the bot with `[p]pm <user_ID> <message>`."""
+    """
+    Forward all DMs sent to the bot to the bot owner (or a specified channel), including messages with attachments.
+    """
 
-    __author__ = "saurichable"
     __version__ = "2.4.0"
 
     def __init__(self, bot):
@@ -22,6 +22,15 @@ class Forwarding(commands.Cog):
         self.config.register_global(
             guild_id=0, channel_id=0, ping_role_id=0, ping_user_id=0
         )
+
+    async def red_delete_data_for_user(self, *, requester, user_id):
+        for guild in self.bot.guilds:
+            if user_id == await self.config.guild(guild).ping_user_id():
+                await self.config.guild(guild).ping_user_id.clear()
+
+    def format_help_for_context(self, ctx: commands.Context) -> str:
+        context = super().format_help_for_context(ctx)
+        return f"{context}\n\nVersion: {self.__version__}"
 
     async def _send_to(self, embed):
         guild = self.bot.get_guild(await self.config.guild_id())
@@ -105,10 +114,7 @@ class Forwarding(commands.Cog):
     @checks.is_owner()
     @commands.guild_only()
     async def forwardset(self, ctx: commands.Context):
-        f"""Various Forwarding settings.
-        
-        Version: {self.__version__}
-        Author: {self.__author__}"""
+        """Various Forwarding settings."""
 
     @forwardset.command(name="channel")
     async def forwardset_channel(
@@ -126,7 +132,10 @@ class Forwarding(commands.Cog):
 
     @forwardset.command(name="ping")
     async def forwardset_ping(
-        self, ctx: commands.Context, *, ping: typing.Union[discord.Role, discord.Member, None]
+        self,
+        ctx: commands.Context,
+        *,
+        ping: typing.Union[discord.Role, discord.Member, None],
     ):
         """Set a role or a member to be pinged for forwarding."""
         if ping:
@@ -134,8 +143,10 @@ class Forwarding(commands.Cog):
                 await self.config.ping_role_id.set(ping.id)
             else:
                 await self.config.ping_user_id(ping.id)
-            await ctx.send(f"I will ping {ping.name}.\n"
-            f"Remember to `{ctx.clean_prefix}forwardset channel`")
+            await ctx.send(
+                f"I will ping {ping.name}.\n"
+                f"Remember to `{ctx.clean_prefix}forwardset channel`"
+            )
         else:
             await self.config.ping_role_id.clear()
             await self.config.ping_user_id.clear()
