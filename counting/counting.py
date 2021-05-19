@@ -151,20 +151,6 @@ class Counting(commands.Cog):
         else:
             await ctx.send("Warning messages are now disabled.")
 
-    @countset.command(name="topic")
-    async def countset_topic(
-        self, ctx: commands.Context, on_off: typing.Optional[bool]
-    ):
-        """Toggle counting channel's topic changing.
-
-        If `on_off` is not provided, the state will be flipped.="""
-        target_state = on_off or not (await self.config.guild(ctx.guild).topic())
-        await self.config.guild(ctx.guild).topic.set(target_state)
-        if target_state:
-            await ctx.send("Updating the channel's topic is now enabled.")
-        else:
-            await ctx.send("Updating the channel's topic is now disabled.")
-
     @countset.command(name="settings")
     async def countset_settings(self, ctx: commands.Context):
         """See current settings."""
@@ -191,7 +177,6 @@ class Counting(commands.Cog):
         embed.add_field(name="Warning message:", value=warn)
         embed.add_field(name="Next number:", value=str(data["previous"] + 1))
         embed.add_field(name="Goal:", value=goal)
-        embed.add_field(name="Topic changing:", value=str(data["topic"]))
 
         await ctx.send(embed=embed)
 
