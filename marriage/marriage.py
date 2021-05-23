@@ -134,7 +134,7 @@ class Marriage(commands.Cog):
 
     @commands.group(autohelp=True, aliases=["marriage"])
     @commands.guild_only()
-    @commands.admin_or_permissions(manage_server=True)
+    @commands.admin_or_permissions(manage_guild=True)
     async def marryset(self, ctx: commands.Context):
         """Various Marriage settings."""
 
