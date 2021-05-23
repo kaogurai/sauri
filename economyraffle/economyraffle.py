@@ -90,7 +90,7 @@ class EconomyRaffle(commands.Cog):
         await self.config.guild(ctx.guild).message.set(message)
         await ctx.tick()
 
-    @checks.mod()
+    @checks.mod_or_permissions(ban_members=True)
     @commands.command()
     @commands.guild_only()
     async def economyraffle(self, ctx: commands.Context):

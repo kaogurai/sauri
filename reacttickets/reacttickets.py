@@ -343,7 +343,7 @@ class ReactTickets(commands.Cog):
 
     @commands.command()
     @commands.guild_only()
-    @checks.mod()
+    @checks.mod_or_permissions(ban_members=True)
     @checks.bot_has_permissions(manage_messages=True)
     async def ticket(self, ctx: commands.Context, msg_id: int, *, note: str):
         """Add a staff-only note to a ticket.

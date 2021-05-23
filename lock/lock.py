@@ -112,7 +112,7 @@ class Lock(commands.Cog):
 
         await ctx.send(embed=embed)
 
-    @checks.mod()
+    @checks.mod_or_permissions(ban_members=True)
     @checks.bot_has_permissions(manage_channels=True)
     @commands.guild_only()
     @commands.group(invoke_without_command=True)
@@ -171,7 +171,7 @@ class Lock(commands.Cog):
                 )
         await ctx.send(":lock: Server locked. Only Moderators can type.")
 
-    @checks.mod()
+    @checks.mod_or_permissions(ban_members=True)
     @checks.bot_has_permissions(manage_channels=True)
     @commands.guild_only()
     @commands.group(invoke_without_command=True)
