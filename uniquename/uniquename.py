@@ -33,7 +33,7 @@ class UniqueName(commands.Cog):
         return f"{context}\n\nVersion: {self.__version__}"
 
     @commands.group(autohelp=True, aliases=["unset", "uniquename"])
-    @checks.admin()
+    @commands.admin_or_permissions(manage_guild=True)
     @commands.guild_only()
     @checks.bot_has_permissions(manage_nicknames=True)
     async def uniquenameset(self, ctx: commands.Context):

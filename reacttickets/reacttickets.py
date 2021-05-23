@@ -88,7 +88,7 @@ class ReactTickets(commands.Cog):
 
     @commands.group()
     @commands.guild_only()
-    @checks.admin()
+    @commands.admin_or_permissions(manage_guild=True)
     @checks.bot_has_permissions(
         add_reactions=True,
         manage_channels=True,

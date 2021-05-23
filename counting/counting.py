@@ -43,7 +43,7 @@ class Counting(commands.Cog):
         context = super().format_help_for_context(ctx)
         return f"{context}\n\nVersion: {self.__version__}"
 
-    @checks.admin()
+    @commands.admin_or_permissions(manage_guild=True)
     @checks.bot_has_permissions(manage_channels=True, manage_messages=True)
     @commands.group(autohelp=True, aliases=["counting"])
     @commands.guild_only()

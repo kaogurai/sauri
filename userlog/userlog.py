@@ -32,7 +32,7 @@ class UserLog(commands.Cog):
 
     @commands.group(autohelp=True, aliases=["userlog"])
     @commands.guild_only()
-    @checks.admin()
+    @commands.admin_or_permissions(manage_guild=True)
     async def userlogset(self, ctx: commands.Context):
         """Various User Log settings."""
 

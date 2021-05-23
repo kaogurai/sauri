@@ -23,7 +23,7 @@ class Mentionable(commands.Cog):
         context = super().format_help_for_context(ctx)
         return f"{context}\n\nVersion: {self.__version__}"
 
-    @checks.admin()
+    @commands.admin_or_permissions(manage_guild=True)
     @commands.command()
     @commands.guild_only()
     @checks.bot_has_permissions(manage_roles=True)
@@ -35,7 +35,7 @@ class Mentionable(commands.Cog):
         else:
             await ctx.send(f"{role} is already mentionable.")
 
-    @checks.admin()
+    @commands.admin_or_permissions(manage_guild=True)
     @commands.command()
     @commands.guild_only()
     @checks.bot_has_permissions(manage_roles=True)

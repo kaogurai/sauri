@@ -37,7 +37,7 @@ class EconomyRaffle(commands.Cog):
 
     @commands.group(autohelp=True, aliases=["erset"])
     @commands.guild_only()
-    @checks.admin()
+    @commands.admin_or_permissions(manage_guild=True)
     async def economyraffleset(self, ctx: commands.Context):
         """Various Economy Raffle settings."""
 

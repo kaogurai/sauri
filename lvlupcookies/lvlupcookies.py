@@ -35,7 +35,7 @@ class LevelUpCookies(commands.Cog):
         context = super().format_help_for_context(ctx)
         return f"{context}\n\nVersion: {self.__version__}"
 
-    @checks.admin()
+    @commands.admin_or_permissions(manage_guild=True)
     @commands.guild_only()
     @commands.group(autohelp=True, aliases=["levelupcookies"])
     async def levelupcookiesset(self, ctx: commands.Context):

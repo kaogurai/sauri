@@ -43,7 +43,7 @@ class CookieStore(commands.Cog):
         return f"{context}\n\nVersion: {self.__version__}"
 
     @commands.group(autohelp=True, aliases=["cookiestore", "storeset"])
-    @checks.admin()
+    @commands.admin_or_permissions(manage_guild=True)
     @commands.guild_only()
     async def cookiestoreset(self, ctx):
         """Various Cookie Store settings."""

@@ -34,7 +34,7 @@ class Gallery(commands.Cog):
 
     @commands.group(autohelp=True)
     @commands.guild_only()
-    @checks.admin()
+    @commands.admin_or_permissions(manage_guild=True)
     @checks.bot_has_permissions(manage_messages=True)
     async def galleryset(self, ctx: commands.Context):
         """Various Gallery settings."""

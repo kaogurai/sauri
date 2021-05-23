@@ -90,7 +90,7 @@ class Forwarding(commands.Cog):
         await self._send_to(embed)
 
     @commands.command()
-    @checks.admin()
+    @commands.admin_or_permissions(manage_guild=True)
     async def pm(self, ctx: commands.Context, user_id: int, *, message: str):
         """PMs a person."""
         destination = get(ctx.bot.get_all_members(), id=user_id)

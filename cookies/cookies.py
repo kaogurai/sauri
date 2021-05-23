@@ -336,7 +336,7 @@ class Cookies(commands.Cog):
             await ctx.send(box(empty, lang="md"))
 
     @commands.group(autohelp=True)
-    @checks.admin()
+    @commands.admin_or_permissions(manage_guild=True)
     @commands.guild_only()
     async def cookieset(self, ctx):
         """Various Cookies settings."""

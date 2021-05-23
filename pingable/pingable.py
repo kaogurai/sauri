@@ -31,7 +31,7 @@ class Pingable(commands.Cog):
         return f"{context}\n\nVersion: {self.__version__}"
 
     @commands.group(autohelp=True)
-    @checks.admin()
+    @commands.admin_or_permissions(manage_guild=True)
     @commands.guild_only()
     @checks.bot_has_permissions(manage_roles=True)
     async def pingableset(self, ctx: commands.Context):

@@ -129,7 +129,7 @@ class Suggestion(commands.Cog):
         except discord.Forbidden:
             pass
 
-    @checks.admin()
+    @commands.admin_or_permissions(manage_guild=True)
     @commands.command()
     @commands.guild_only()
     @checks.bot_has_permissions(manage_messages=True)
@@ -142,7 +142,7 @@ class Suggestion(commands.Cog):
         """Approve a suggestion."""
         await self._finish_suggestion(ctx, suggestion_id, is_global, True, None)
 
-    @checks.admin()
+    @commands.admin_or_permissions(manage_guild=True)
     @commands.command()
     @commands.guild_only()
     @checks.bot_has_permissions(manage_messages=True)
@@ -157,7 +157,7 @@ class Suggestion(commands.Cog):
         """Reject a suggestion. Reason is optional."""
         await self._finish_suggestion(ctx, suggestion_id, is_global, False, reason)
 
-    @checks.admin()
+    @commands.admin_or_permissions(manage_guild=True)
     @commands.command()
     @commands.guild_only()
     @checks.bot_has_permissions(manage_messages=True)
@@ -206,7 +206,7 @@ class Suggestion(commands.Cog):
         await self.config.custom("SUGGESTION", server, suggestion_id).rtext.set(reason)
         await ctx.tick()
 
-    @checks.admin()
+    @commands.admin_or_permissions(manage_guild=True)
     @commands.command()
     @commands.guild_only()
     async def showsuggestion(
@@ -221,7 +221,7 @@ class Suggestion(commands.Cog):
         )
         await ctx.send(content=content, embed=embed)
 
-    @checks.admin()
+    @commands.admin_or_permissions(manage_guild=True)
     @checks.bot_has_permissions(
         manage_channels=True, add_reactions=True, manage_messages=True
     )

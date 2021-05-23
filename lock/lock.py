@@ -33,7 +33,7 @@ class Lock(commands.Cog):
 
     @commands.group(autohelp=True)
     @commands.guild_only()
-    @checks.admin()
+    @commands.admin_or_permissions(manage_guild=True)
     async def lockset(self, ctx: commands.Context):
         """Various Lock settings."""
 
