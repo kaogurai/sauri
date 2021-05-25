@@ -404,15 +404,14 @@ class Suggestion(commands.Cog):
     @commands.command(aliases=["listsuggestionbans"])
     @commands.mod_or_permissions(ban_members=True)
     @commands.guild_only()
-    async def suggestionbans(self, ctx, user: discord.Member):
+    async def suggestionbans(self, ctx):
         """View all users who have been banned from making suggestions."""
         bans = await self.config.guild(ctx.guild).banned()
         if not bans:
             await ctx.send("No users are banned from making suggestions.")
             return
         else:
-            await ctx.send(bans)
-            # make this better lol
+            await ctx.send_interactive(bans)
 
     @commands.command(aliases=["clearsuggestionbans"])
     @commands.admin_or_permissions(manage_guild=True)
