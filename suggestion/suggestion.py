@@ -348,7 +348,7 @@ class Suggestion(commands.Cog):
             inline=False,
         )
         embed.add_field(
-            name="Allow attachments."
+            name="Allow attachments:",
             value=data["allow_attachments"],
             inline=False
         )
