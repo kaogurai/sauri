@@ -356,7 +356,7 @@ class Suggestion(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command(aliases=["suggestban", "bansuggest"])
-    @commands.mod_or_permissions(ban_members=true)
+    @commands.mod_or_permissions(ban_members=True)
     @commands.guild_only()
     async def suggestionban(self, ctx, user: discord.Member):
         """Ban a user from making suggestions."""
@@ -379,7 +379,7 @@ class Suggestion(commands.Cog):
             await ctx.tick()
 
     @commands.command(aliases=["suggestunban", "unbansuggest"])
-    @commands.mod_or_permissions(ban_members=true)
+    @commands.mod_or_permissions(ban_members=True)
     @commands.guild_only()
     async def suggestionunban(self, ctx, user: discord.Member):
         """Unban a user from making suggestions"""
@@ -402,7 +402,7 @@ class Suggestion(commands.Cog):
             await ctx.tick()
 
     @commands.command(aliases=["listsuggestionbans"])
-    @commands.mod_or_permissions(ban_members=true)
+    @commands.mod_or_permissions(ban_members=True)
     @commands.guild_only()
     async def suggestionbans(self, ctx, user: discord.Member):
         """View all users who have been banned from making suggestions."""
@@ -415,7 +415,7 @@ class Suggestion(commands.Cog):
             # make this better lol
 
     @commands.command(aliases=["clearsuggestionbans"])
-    @commands.admin_or_permissions(manage_guild=true)
+    @commands.admin_or_permissions(manage_guild=True)
     @commands.guild_only()
     async def suggestionclearbans(self, ctx, user: discord.Member):
         """Clear all users who have been banned from making suggestions."""
@@ -440,9 +440,6 @@ class Suggestion(commands.Cog):
                 await ctx.tick()
             else:
                 await ctx.send("Ok, I won't unban anyone.")
-
-
-
 
     @commands.Cog.listener()
     async def on_reaction_add(self, reaction, user):
